@@ -18,6 +18,8 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])
 
 Auth::routes();
 
+Route::get('/debug', [App\Http\Controllers\DebugController::class, 'index']);
+
 Route::get('/role-change/{role_id}', [App\Http\Controllers\RoleController::class, 'change']);
 Route::get('/year-change/{year_id}', [App\Http\Controllers\YearController::class, 'change_current']);
 
