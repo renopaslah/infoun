@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\Student as StudentModel;
 use App\Models\Group;
+use App\Models\Profile;
 use Vinkla\Hashids\Facades\Hashids;
 
 class Student extends Component
@@ -51,9 +52,7 @@ class Student extends Component
 
     public function resetInputFields()
     {
-        $this->studentId = '';
-        $this->profileId = '';
-        $this->groupId = '';
+        $this->name = '';
     }
 
     // --------------------------------------------------
@@ -61,26 +60,26 @@ class Student extends Component
     public function store()
     {
         $this->validate([
-            'profile_id' => 'required',
+            'name' => 'required',
         ]);
 
-        if ($this->studentId) {
+        if (!$this->studentId) {
             $profile = Profile::create([
                 'name' => $this->name
             ]);
 
-            Student::create([
+            StudentModel::create([
                 'profile_id' => $profile->id,
                 'group_id' => $this->groupId,
             ]);
         } else {
-            $student = Student::find($this->studentId);
+            $student = StudentModel::find($this->studentId);
             $student->update(['group_id' => $this->groupId]);
             $student->profile()->update(['name' => $this->name]);
         }
 
+        $this->resetInputFields();
         session()->flash('message', $this->studentId ? 'Siswa berhasil diubah.' : 'Siswa berhasil ditambahkan.');
-        $this->closeForm();
     }
 
     // --------------------------------------------------
