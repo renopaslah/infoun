@@ -1,6 +1,6 @@
 <div class="card">
     <div class="card-header">
-        @if ($studentId)
+        @if ($profileId)
             Ubah Siswa
         @else
             Tambah Siswa
@@ -10,6 +10,14 @@
         <div class="mb-3">
             <label for="formGroupExampleInput" class="form-label">Nama</label>
             <input type="text" class="form-control" name="name" wire:model="name">
+        </div>
+        <div class="mb-3">
+            <label for="formGroupExampleInput" class="form-label">NISN</label>
+            <input type="text" class="form-control" name="nisn">
+        </div>
+        <div class="mb-3">
+            <label for="formGroupExampleInput" class="form-label">Username</label>
+            <input type="text" class="form-control" name="username">
         </div>
     </div>
     <div class="card-footer text-muted d-flex justify-content-between">

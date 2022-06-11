@@ -18,7 +18,6 @@ class CreateStudentsTable extends Migration
             $table->foreignId('profile_id')->constrained()->default(null);
             $table->foreignId('group_id')->constrained()->default(null);
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
