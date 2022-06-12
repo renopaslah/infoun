@@ -17,6 +17,8 @@ class CreateStudentsTable extends Migration
             $table->id();
             $table->foreignId('profile_id')->constrained()->default(null);
             $table->foreignId('group_id')->constrained()->default(null);
+            $table->string('nis', 6)->unique();
+            $table->string('nisn', 10)->unique();
             $table->timestamps();
         });
     }

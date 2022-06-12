@@ -4,7 +4,8 @@
             <select {{ count($groups) ? '' : 'disabled' }} wire:click="setGroup($event.target.value)"
                 class="form-select" aria-label="Default select example">
                 @foreach ($groups as $k => $v)
-                    <option {{ $v->id == $groupId  ? 'selected' : '' }} value="{{ Hashids::encode($v->id) }}">{{ $v->name }}</option>
+                    <option {{ $v->id == $groupId ? 'selected' : '' }} value="{{ Hashids::encode($v->id) }}">
+                        {{ $v->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -13,18 +14,23 @@
         </div>
         <div class="col-md-4">
             <button wire:click="openForm()" class="float-end btn btn-primary">Tambah Siswa</button>
-            <button class="float-end btn btn-success me-md-2">Import Siswa</button>
+            <button wire:click="openFormImport()" class="float-end btn btn-success me-md-2">Import Siswa</button>
         </div>
     </div>
     <div class="row justify-content-center">
         @if ($isOpen)
             <div class="col-md-4">
-                @include('livewire.student.create')
+                @if ($isOpenImport)
+                    @include('livewire.student.import')
+                @else
+                    @include('livewire.student.create')
+                @endif
             </div>
             <div class="col-md-8">
             @else
                 <div class="col-md-12">
         @endif
+
         <div class="card">
             <div class="card-body">
                 @if (session()->has('message'))
@@ -57,9 +63,9 @@
                                         <button class="btn btn-sm btn-danger">Reset Password</button>
                                     </td>
                                     <td>{{ $v->name }}</td>
-                                    <td>-</td>
-                                    <td>-</td>
-                                    <td>-</td>
+                                    <td>{{ $v->nisn }}</td>
+                                    <td>{{ $v->nis }}</td>
+                                    <td>{{ $v->nisn }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

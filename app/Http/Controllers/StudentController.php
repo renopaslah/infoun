@@ -17,4 +17,11 @@ class StudentController extends Controller
     {
         return view('student');
     }
+
+    // --------------------------------------------------
+
+    public function downloadImportTemplate()
+    {
+        return response()->download('./download/importsiswa.xlsx');
+    }
 }

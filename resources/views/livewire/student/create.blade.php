@@ -13,11 +13,11 @@
         </div>
         <div class="mb-3">
             <label for="formGroupExampleInput" class="form-label">NISN</label>
-            <input type="text" class="form-control" name="nisn">
+            <input type="text" class="form-control" name="nisn" wire:model="nisn">
         </div>
         <div class="mb-3">
-            <label for="formGroupExampleInput" class="form-label">Username</label>
-            <input type="text" class="form-control" name="username">
+            <label for="formGroupExampleInput" class="form-label">NIS</label>
+            <input type="text" class="form-control" name="nisn" wire:model="nis">
         </div>
     </div>
     <div class="card-footer text-muted d-flex justify-content-between">

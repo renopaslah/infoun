@@ -7,13 +7,23 @@ use App\Models\Student as StudentModel;
 use App\Models\Group;
 use App\Models\Profile;
 use Vinkla\Hashids\Facades\Hashids;
+use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\StudentImport;
 
 class Student extends Component
 {
+    use WithFileUploads;
+
     public $data;
-    public $studentId, $profileId, $groups, $groupId = 0, $name, $yearId = 0;
+    public $studentId, $profileId, $groups, $groupId = 0, $name, $nisn, $nis, $yearId = 0;
     public $isOpen = 0;
     public $keyword = '';
+    public $message = 'mesage';
+
+    // Studetn Import
+    public $isOpenImport = 0;
+    public $importFile;
 
     // Page number
     public $numberOfData;
@@ -142,6 +152,8 @@ class Student extends Component
     public function resetInputFields()
     {
         $this->name = '';
+        $this->nisn = '';
+        $this->nis = '';
         $this->profileId = '';
     }
 
@@ -151,19 +163,27 @@ class Student extends Component
     {
         $this->validate([
             'name' => 'required',
+            'nisn' => 'required',
+            'nis' => 'required',
         ]);
 
         if (!$this->profileId) {
             StudentModel::createWithProfile([
                 'name' => $this->name,
+                'nisn' => $this->nisn,
+                'nis' => $this->nis,
             ], $this->groupId);
         } else {
-            $profile = Profile::find($this->profileId);
-            $profile->update(['name' => $this->name]);
+            StudentModel::updateWithProfile([
+                'name' => $this->name,
+                'nisn' => $this->nisn,
+                'nis' => $this->nis,
+            ], $this->profileId);
         }
 
         session()->flash('message', $this->profileId ? 'Siswa berhasil diubah.' : 'Siswa berhasil ditambahkan.');
         $this->resetInputFields();
+        $this->isOpen = false;
     }
 
     // --------------------------------------------------
@@ -171,6 +191,15 @@ class Student extends Component
     public function openForm()
     {
         $this->isOpen = true;
+        $this->isOpenImport = false;
+    }
+
+    // --------------------------------------------------
+
+    public function openFormImport()
+    {
+        $this->isOpen = true;
+        $this->isOpenImport = true;
     }
 
     // --------------------------------------------------
@@ -188,17 +217,38 @@ class Student extends Component
     {
         $id = Hashids::decode($id)[0];
         $this->profileId = StudentModel::findOrFail($id)->profile_id;
-        $this->name = Profile::find($this->profileId)->name;
+        
+        $profile = Profile::find($this->profileId);
+        $student = StudentModel::where('profile_id', $this->profileId)->first();
+        $this->name = $profile->name;
+        $this->nis = $student->nis;
+        $this->nisn = $student->nisn;
 
         $this->openForm();
     }
 
     // --------------------------------------------------
-
+    
     public function delete()
     {
         StudentModel::find($this->studentId)->delete();
         $this->studentId = 0;
+        $this->currentPage = 1;
         session()->flash('message', 'Siswa berhasil dihapus');
+    }
+
+    // --------------------------------------------------
+
+    public function save()
+    {
+        $this->validate([
+            'importFile' => 'required|mimes:xls,xlsx|max:1024', // 1MB Max
+        ]);
+
+        $importProcess = new StudentImport;
+        $importProcess->setGroupId($this->groupId);
+
+        Excel::import($importProcess, $this->importFile);
+        $this->isOpen = false;
     }
 }

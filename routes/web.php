@@ -29,6 +29,9 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
 Route::get('data/student', [App\Http\Controllers\StudentController::class, 'index'])
 ->name('student')->middleware('role_for_controller:5,readonly');
 
+Route::get('data/student/download-template', [App\Http\Controllers\StudentController::class, 'downloadImportTemplate'])
+->name('download-template')->middleware('role_for_controller:5,readonly');
+
 Route::get('reference/group', [App\Http\Controllers\GroupController::class, 'index'])
 ->name('group')->middleware('role_for_controller:7,readonly');
 

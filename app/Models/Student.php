@@ -20,7 +20,7 @@ class Student extends Model
 
     public function profiles($groupId, $yearId, $offset = []){
         $data = DB::table('students')
-        ->select('students.id', 'profiles.name')
+        ->select('students.id', 'students.nisn', 'students.nis', 'profiles.name')
         ->leftJoin('groups', 'students.group_id', '=', 'groups.id')
         ->leftJoin('profiles', 'profiles.id', '=', 'students.profile_id')
         ->where('groups.year_id', $yearId)
@@ -37,7 +37,7 @@ class Student extends Model
 
     public function search($groupId, $yearId, $keyword){
         return DB::table('students')
-        ->select('students.id', 'profiles.name')
+        ->select('students.id', 'students.nisn', 'students.nis', 'profiles.name')
         ->leftJoin('groups', 'students.group_id', '=', 'groups.id')
         ->leftJoin('profiles', 'profiles.id', '=', 'students.profile_id')
         ->where('groups.year_id', $yearId)
@@ -51,12 +51,27 @@ class Student extends Model
 
     public function createWithProfile($profiles = [], $groupId){
         $profile = Profile::create([
-            'name' => $profiles['name']
+            'name' => $profiles['name'],
         ]);
-
+        
         DB::table('students')->insert([
             'profile_id' => $profile->id,
             'group_id' => $groupId,
+            'nisn' => $profiles['nisn'],
+            'nis' => $profiles['nis'],
+        ]);
+    }
+
+    // --------------------------------------------------
+
+    public function updateWithProfile($profiles = [], $profileId){
+        Profile::find($profileId)->update([
+            'name' => $profiles['name'],
+        ]);
+        
+        DB::table('students')->where('profile_id', $profileId)->update([
+            'nisn' => $profiles['nisn'],
+            'nis' => $profiles['nis'],
         ]);
     }
 }
