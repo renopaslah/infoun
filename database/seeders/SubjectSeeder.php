@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Subject;
 
 class SubjectSeeder extends Seeder
 {
@@ -13,6 +14,20 @@ class SubjectSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Subject::create([
+            'name' => 'Bahasa Indonesia',
+        ]);
+
+        Subject::create([
+            'name' => 'Bahasa Inggris',
+        ]);
+
+        Subject::create([
+            'name' => 'Matematika',
+        ]);
+
+        Subject::create([
+            'name' => 'Produktif',
+        ]);
     }
 }

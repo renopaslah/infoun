@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             RoleXcontrollerSeeder::class,
             YearSeeder::class,
             GroupSeeder::class,
+            SubjectSeeder::class,
         ]);
     }
 }

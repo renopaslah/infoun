@@ -155,6 +155,7 @@ class Student extends Component
         $this->nisn = '';
         $this->nis = '';
         $this->profileId = '';
+        $this->keyword = '';
     }
 
     // --------------------------------------------------

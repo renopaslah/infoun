@@ -32,6 +32,9 @@ Route::get('data/student', [App\Http\Controllers\StudentController::class, 'inde
 Route::get('data/student/download-template', [App\Http\Controllers\StudentController::class, 'downloadImportTemplate'])
 ->name('download-template')->middleware('role_for_controller:5,readonly');
 
+Route::get('data/subject', [App\Http\Controllers\SubjectController::class, 'index'])
+->name('subject')->middleware('role_for_controller:6,readonly');
+
 Route::get('reference/group', [App\Http\Controllers\GroupController::class, 'index'])
 ->name('group')->middleware('role_for_controller:7,readonly');
 
