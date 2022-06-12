@@ -9,7 +9,7 @@
             </select>
         </div>
         <div class="col-md-4">
-            <input wire:keydown.enter="search()" wire:model.defer="keyword" type="text" class="form-control" placeholder="Ketik dan enter untuk cari">
+            <input wire:model.debounce.500ms="keyword" type="text" class="form-control" placeholder="Cari ...">
         </div>
         <div class="col-md-4">
             <button wire:click="openForm()" class="float-end btn btn-primary">Tambah Siswa</button>

@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\Profile;
 
 class Student extends Model
 {
@@ -48,11 +49,14 @@ class Student extends Model
 
     // --------------------------------------------------
 
-    // public function scopeYear(){
-    //     return DB::table('students')
-    //     ->select('students.id', 'profiles.name')
-    //     ->leftJoin('groups', 'students.group_id', '=', 'groups.id')
-    //     ->leftJoin('profiles', 'profiles.id', '=', 'students.profile_id')
-    //     ->get();
-    // }
+    public function createWithProfile($profiles = [], $groupId){
+        $profile = Profile::create([
+            'name' => $profiles['name']
+        ]);
+
+        DB::table('students')->insert([
+            'profile_id' => $profile->id,
+            'group_id' => $groupId,
+        ]);
+    }
 }

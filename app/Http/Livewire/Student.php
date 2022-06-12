@@ -43,12 +43,17 @@ class Student extends Component
 
     public function render()
     {
-        if($this->keyword == ''){
+        if ($this->keyword == '') {
             $allData = StudentModel::profiles($this->groupId, $this->yearID);
             $this->numberOfData = count($allData);
             $this->numberOfFirstRow = ($this->currentPage - 1) * $this->numberPerPage;
             $this->data = StudentModel::profiles($this->groupId, $this->yearID, [$this->numberOfFirstRow, $this->numberPerPage]);
-            $this->numberOfPage = ceil($this->numberOfData/$this->numberPerPage);
+            $this->numberOfPage = ceil($this->numberOfData / $this->numberPerPage);
+        } else {
+            $this->data = $allData = StudentModel::search($this->groupId, $this->yearID, $this->keyword);
+            $this->numberOfData = count($allData);
+            $this->numberOfFirstRow = ($this->currentPage - 1) * $this->numberPerPage;
+            $this->numberOfPage = ceil($this->numberOfData / $this->numberPerPage);
         }
 
         $this->paginationProcess();
@@ -86,16 +91,6 @@ class Student extends Component
         } else {
             $this->canBePrev = true;
         }
-    }
-
-    // --------------------------------------------------
-
-    public function search()
-    {
-        $this->data = $allData = StudentModel::search($this->groupId, $this->yearID, $this->keyword);
-        $this->numberOfData = count($allData);
-        $this->numberOfFirstRow = ($this->currentPage - 1) * $this->numberPerPage;
-        $this->numberOfPage = ceil($this->numberOfData/$this->numberPerPage);
     }
 
     // --------------------------------------------------
@@ -159,21 +154,16 @@ class Student extends Component
         ]);
 
         if (!$this->profileId) {
-            $profile = Profile::create([
-                'name' => $this->name
-            ]);
-
-            StudentModel::create([
-                'profile_id' => $profile->id,
-                'group_id' => $this->groupId,
-            ]);
+            StudentModel::createWithProfile([
+                'name' => $this->name,
+            ], $this->groupId);
         } else {
             $profile = Profile::find($this->profileId);
             $profile->update(['name' => $this->name]);
         }
 
+        session()->flash('message', $this->profileId ? 'Siswa berhasil diubah.' : 'Siswa berhasil ditambahkan.');
         $this->resetInputFields();
-        session()->flash('message', $this->studentId ? 'Siswa berhasil diubah.' : 'Siswa berhasil ditambahkan.');
     }
 
     // --------------------------------------------------
@@ -189,6 +179,7 @@ class Student extends Component
     {
         $this->isOpen = false;
         $this->resetInputFields();
+        $this->keyword = '';
     }
 
     // --------------------------------------------------
