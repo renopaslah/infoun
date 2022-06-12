@@ -42,13 +42,6 @@ class Subject extends Component
 
     // --------------------------------------------------
 
-    public function setId($id)
-    {
-        $this->subjectId = Hashids::decode($id)[0];
-    }
-
-    // --------------------------------------------------
-
     public function store()
     {
         $this->validate([
@@ -79,8 +72,9 @@ class Subject extends Component
     
     // --------------------------------------------------
 
-    public function delete()
+    public function delete($id)
     {
+        $this->subjectId = Hashids::decode($id)[0];
         SubjectModel::find($this->subjectId)->delete();
         session()->flash('message', 'Mata Uji berhasil dihapus');
         $this->resetInputFields();
