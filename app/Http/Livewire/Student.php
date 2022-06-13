@@ -21,7 +21,7 @@ class Student extends Component
     public $keyword = '';
     public $message = 'mesage';
 
-    // Studetn Import
+    // Student Import
     public $isOpenImport = 0;
     public $importFile;
 

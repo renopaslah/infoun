@@ -27,7 +27,11 @@ class SubjectSeeder extends Seeder
         ]);
 
         Subject::create([
-            'name' => 'Produktif',
+            'name' => 'Teori Produktif',
+        ]);
+
+        Subject::create([
+            'name' => 'Praktik Produktif',
         ]);
     }
 }

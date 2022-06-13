@@ -26,6 +26,9 @@ Route::get('/year-change/{year_id}', [App\Http\Controllers\YearController::class
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
 ->name('home')->middleware('role_for_controller:1,readonly');
 
+Route::get('/score', [App\Http\Controllers\ScoreController::class, 'index'])
+->name('score')->middleware('role_for_controller:3,readonly');
+
 Route::get('data/student', [App\Http\Controllers\StudentController::class, 'index'])
 ->name('student')->middleware('role_for_controller:5,readonly');
 
