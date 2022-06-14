@@ -6,12 +6,20 @@ use Livewire\Component;
 use App\Controllers\PaginationController as Pagination;
 use App\Models\Score as ScoreModel;
 use App\Models\Group;
+use App\Models\Student;
+use App\Models\Subject;
+use App\Exports\ScoreExport;
 use Vinkla\Hashids\Facades\Hashids;
+use Livewire\WithFileUploads;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\ScoreImport;
 
 use function Psy\debug;
 
 class Score extends Component
 {
+    use WithFileUploads;
+    
     public $isOpen;
     public $scoreId;
     public $groupId;
@@ -21,11 +29,8 @@ class Score extends Component
     public $graduationStatus = 1;
     public $hasScore = 0;
 
-    public $subjectBidId = 1;
-    public $subjectBigId = 2;
-    public $subjectMatId = 3;
-    public $subjectTproId = 4;
-    public $subjectPproId = 5;
+    public $isOpenImport;
+    public $importFile;
 
     public $bidScore = 0;
     public $bigScore = 0;
@@ -105,6 +110,27 @@ class Score extends Component
 
     // --------------------------------------------------
 
+    public function next()
+    {
+        $this->currentPage = $this->currentPage + 1;
+    }
+
+    // --------------------------------------------------
+
+    public function prev()
+    {
+        $this->currentPage = $this->currentPage - 1;
+    }
+
+    // --------------------------------------------------
+
+    public function setPage($number)
+    {
+        $this->currentPage = $number;
+    }
+
+    // --------------------------------------------------
+
     public function resetInputFields()
     {
         $this->graduationStatus = 1;
@@ -122,6 +148,24 @@ class Score extends Component
     public function setGroup($id)
     {
         $this->groupId = Hashids::decode($id)[0];
+        $this->closeForm();
+    }
+
+    // --------------------------------------------------
+
+    public function openForm()
+    {
+        $this->isOpen = true;
+        $this->isOpenImport = false;
+    }
+
+    // --------------------------------------------------
+
+    public function openFormImport()
+    {
+        $this->isOpen = true;
+        $this->currentPage = 1;
+        $this->isOpenImport = true;
     }
 
     // --------------------------------------------------
@@ -129,6 +173,7 @@ class Score extends Component
     public function closeForm()
     {
         $this->isOpen = false;
+        $this->isOpenImport = false;
         $this->resetInputFields();
     }
 
@@ -139,7 +184,14 @@ class Score extends Component
         $this->resetInputFields();
         $this->studentId = Hashids::decode($studentId)[0];
         $this->hasScore = 0;
-        $this->isOpen = true;
+        $this->openForm();
+    }
+
+    // --------------------------------------------------
+
+    public function downloadTemplate()
+    {
+        return Excel::download(new ScoreExport, 'nilai.xlsx');
     }
 
     // --------------------------------------------------
@@ -151,34 +203,38 @@ class Score extends Component
         $data = [
             [
                 'student_id' => $this->studentId,
-                'subject_id' => $this->subjectBidId,
+                'subject_id' => Subject::subjectWithId()['subjectBidId'],
                 'score' => $this->bidScore,
             ],
             [
                 'student_id' => $this->studentId,
-                'subject_id' => $this->subjectMatId,
+                'subject_id' => Subject::subjectWithId()['subjectMatId'],
                 'score' => $this->matScore,
             ],
             [
                 'student_id' => $this->studentId,
-                'subject_id' => $this->subjectBigId,
+                'subject_id' => Subject::subjectWithId()['subjectBigId'],
                 'score' => $this->bigScore,
             ],
             [
                 'student_id' => $this->studentId,
-                'subject_id' => $this->subjectTproId,
+                'subject_id' => Subject::subjectWithId()['subjectTproId'],
                 'score' => $this->tproScore,
             ],
             [
                 'student_id' => $this->studentId,
-                'subject_id' => $this->subjectPproId,
+                'subject_id' => Subject::subjectWithId()['subjectPproId'],
                 'score' => $this->pproScore,
             ],
         ];
-        ScoreModel::insert($data);
 
-        $this->resetInputFields();
-        $this->isOpen = false;
+
+        ScoreModel::insert($data);
+        $student = Student::find($this->studentId);
+        $student->status = $this->graduationStatus;
+        $student->save();
+
+        $this->closeForm();
     }
 
     // --------------------------------------------------
@@ -186,14 +242,15 @@ class Score extends Component
     public function edit($student_id)
     {
         $this->studentId = Hashids::decode($student_id)[0];
-        $data = ScoreModel::where('student_id', $this->studentId)->get();
+        $data = ScoreModel::with('students')->where('student_id', $this->studentId)->get();
+        $this->graduationStatus = $data[0]->students->status;
         $this->bidScore = $data[0]->score;
         $this->matScore = $data[1]->score;
         $this->bigScore = $data[2]->score;
         $this->tproScore = $data[3]->score;
         $this->pproScore = $data[4]->score;
         $this->hasScore = 1;
-        $this->isOpen = true;
+        $this->openForm();
     }
 
     // --------------------------------------------------
@@ -201,5 +258,19 @@ class Score extends Component
     public function setGraduationStatus($status = 0)
     {
         $this->graduationStatus = $status;
+    }
+
+    // --------------------------------------------------
+
+    public function save()
+    {
+        $this->validate([
+            'importFile' => 'required|mimes:xls,xlsx|max:1024', // 1MB Max
+        ]);
+
+        $importProcess = new ScoreImport;
+        Excel::import($importProcess, $this->importFile);
+        $this->closeForm();
+        session()->flash('message', 'Nilai berhasil diimport');
     }
 }

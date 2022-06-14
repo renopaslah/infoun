@@ -13,4 +13,19 @@ class Subject extends Model
     protected $fillable = [
         'name',
     ];
+
+    // --------------------------------------------------
+
+    public function subjectWithId()
+    {
+        $data = [
+            'subjectBidId' => 1,
+            'subjectBigId' => 2,
+            'subjectMatId' => 3,
+            'subjectTproId' => 4,
+            'subjectPproId' => 5,
+        ];
+
+        return $data;
+    }
 }

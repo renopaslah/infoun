@@ -13,13 +13,17 @@
             <input type="text" class="form-control" placeholder="Cari ...">
         </div>
         <div class="col-md-4">
-            <button class="float-end btn btn-success">Import Nilai</button>
+            <button wire:click="openFormImport()" class="float-end btn btn-success">Import Nilai</button>
         </div>
     </div>
     <div class="row justify-content-center">
         @if ($isOpen)
             <div class="col-md-4">
-                @include('livewire.score.create')
+                @if ($isOpenImport)
+                    @include('livewire.score.import')
+                @else
+                    @include('livewire.score.create')
+                @endif
             </div>
             <div class="col-md-8">
             @else
@@ -53,14 +57,16 @@
                                 <tr>
                                     <th scope="row">{{ $numberOfFirstRow = $numberOfFirstRow + 1 }}</th>
                                     <td>
-                                        @if($v[0]->id)
-                                        <button wire:click="edit('{{ Hashids::encode($v[0]->student_id) }}')" class="btn btn-sm btn-warning">Edit</button>
+                                        @if ($v[0]->id)
+                                            <button wire:click="edit('{{ Hashids::encode($v[0]->student_id) }}')"
+                                                class="btn btn-sm btn-warning">Edit</button>
                                         @else
-                                        <button wire:click="add('{{ Hashids::encode($v[0]->student_id) }}')" class="btn btn-sm btn-success">Tambah</button>
+                                            <button wire:click="add('{{ Hashids::encode($v[0]->student_id) }}')"
+                                                class="btn btn-sm btn-success">Tambah</button>
                                         @endif
                                     </td>
                                     <td>{{ $v[0]->name }}</td>
-                                    <td></td>
+                                    <td>{{ $v[0]->status == 1 ? 'Lulus' : 'Tidak Lulus' }}</td>
                                     <td>{{ isset($v[4]->score) ? $v[4]->score : '-' }}</td>
                                     <td>{{ isset($v[3]->score) ? $v[3]->score : '-' }}</td>
                                     <td>{{ isset($v[2]->score) ? $v[2]->score : '-' }}</td>
@@ -84,10 +90,10 @@
                                 </li>
                                 @foreach ($paginations as $k => $v)
                                     @if ($currentPage == $v)
-                                        <li class="page-item active"><a class="page-link"
+                                        <li wire:click="setPage({{ $v }})" class="page-item active"><a class="page-link"
                                                 href="#">{{ $v }}</a></li>
                                     @else
-                                        <li class="page-item"><a class="page-link"
+                                        <li wire:click="setPage({{ $v }})" class="page-item"><a class="page-link"
                                                 href="#">{{ $v }}</a></li>
                                     @endif
                                 @endforeach

@@ -29,11 +29,15 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])
 Route::get('/score', [App\Http\Controllers\ScoreController::class, 'index'])
 ->name('score')->middleware('role_for_controller:3,readonly');
 
+Route::get('/score/download/template', [App\Http\Controllers\ScoreController::class, 'createFormImport'])
+->name('download-template')->middleware('role_for_controller:3,readonly');
+
+Route::get('/score/download/template', [App\Http\Livewire\Score::class, 'downloadTemplate'])
+->name('download-template')->middleware('role_for_controller:5,readonly');
+
 Route::get('data/student', [App\Http\Controllers\StudentController::class, 'index'])
 ->name('student')->middleware('role_for_controller:5,readonly');
 
-Route::get('data/student/download-template', [App\Http\Controllers\StudentController::class, 'downloadImportTemplate'])
-->name('download-template')->middleware('role_for_controller:5,readonly');
 
 Route::get('data/subject', [App\Http\Controllers\SubjectController::class, 'index'])
 ->name('subject')->middleware('role_for_controller:6,readonly');
