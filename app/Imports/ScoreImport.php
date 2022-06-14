@@ -18,6 +18,7 @@ class ScoreImport implements ToCollection
     {
         $students = [];
         $students_with_scores = [];
+        $students_with_status = [];
         
         foreach ($collection as $k => $v) {
             if($k > 0){ // mulai dari baris ke 1
@@ -26,7 +27,13 @@ class ScoreImport implements ToCollection
                 $studentId = Student::where('nisn', $v[2])->first()->id;
                 $students[] = $studentId;
 
+                // Mengkolektif status
                 $status = $v[3];
+                $students_with_status[] = [
+                    'student_id' => $studentId,
+                    'status' => $status,
+                ];
+
                 $bid = $v[4];
                 $mat = $v[5];
                 $big = $v[6];
@@ -81,6 +88,17 @@ class ScoreImport implements ToCollection
                     }
                 }
             }
+        }
+
+        // update status
+        foreach($students_with_status as $k => $v){
+            $student = Student::find($v['student_id']);
+            if(isset($v['status'])){
+                $student->status = $v['status'];
+            }else{
+                $student->status = 0;
+            }
+            $student->save();
         }
 
         // delete nilai
